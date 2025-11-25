@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const promos = [
@@ -26,12 +26,14 @@ const PromoCarousel = () => {
     const [index, setIndex] = useState(0);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setIndex(prev => (prev + 1) % promos.length);
-        }, 3000);
-        return () => clearInterval(timer);
+    const nextSlide = useCallback(() => {
+        setIndex(prev => (prev + 1) % promos.length);
     }, []);
+
+    useEffect(() => {
+        const timer = setInterval(nextSlide, 3000);
+        return () => clearInterval(timer);
+    }, [nextSlide]);
 
     const { title, image, link } = promos[index];
 
@@ -44,7 +46,8 @@ const PromoCarousel = () => {
                 marginBottom: '2rem',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                background: `url(${image}) center/cover no-repeat`
+                background: `url(${image}) center/cover no-repeat`,
+                willChange: 'background-image', // Optimize for animation
             }}
         >
             <div
@@ -58,10 +61,15 @@ const PromoCarousel = () => {
                     alignItems: 'center',
                     color: '#fff',
                     textAlign: 'center',
-                    padding: '0 2rem'
+                    padding: '0 2rem',
+                    willChange: 'opacity', // Optimize for fade transitions
                 }}
             >
-                <h2 style={{ fontSize: 'clamp(2rem,5vw,3rem)', marginBottom: '1rem' }}>{title}</h2>
+                <h2 style={{
+                    fontSize: 'clamp(2rem,5vw,3rem)',
+                    marginBottom: '1rem',
+                    animation: 'fadeIn 0.5s ease-out'
+                }}>{title}</h2>
                 <button
                     onClick={() => navigate(link)}
                     className="btn btn-primary"

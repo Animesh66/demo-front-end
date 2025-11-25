@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 import type { Product } from '../context/CartContext';
 
@@ -24,10 +24,19 @@ const Shop = () => {
         fetchProducts();
     }, []);
 
-    const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
-    const filteredProducts = selectedCategory === 'All'
-        ? products
-        : products.filter(p => p.category === selectedCategory);
+    // Memoize categories to avoid recalculation on every render
+    const categories = useMemo(() =>
+        ['All', ...new Set(products.map(p => p.category).filter(Boolean))],
+        [products]
+    );
+
+    // Memoize filtered products
+    const filteredProducts = useMemo(() =>
+        selectedCategory === 'All'
+            ? products
+            : products.filter(p => p.category === selectedCategory),
+        [products, selectedCategory]
+    );
 
     return (
         <div style={{ position: 'relative', paddingTop: '4rem' }}>
