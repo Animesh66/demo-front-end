@@ -1,13 +1,20 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import type { Product } from '../context/CartContext';
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const { cart } = useCart();
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<Product[]>([]);
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
 
     const handleLogout = () => {
         logout();
@@ -16,12 +23,84 @@ const Navbar = () => {
 
     const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
+    // Search products
+    useEffect(() => {
+        const searchProducts = async () => {
+            if (searchQuery.trim().length < 2) {
+                setSearchResults([]);
+                setShowResults(false);
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.00.1:3000/api/products');
+                const products: Product[] = await response.json();
+
+                const query = searchQuery.toLowerCase();
+
+                // Score each product based on match relevance
+                const scoredProducts = products.map(product => {
+                    let score = 0;
+                    const name = product.name.toLowerCase();
+                    const description = product.description.toLowerCase();
+                    const category = product.category.toLowerCase();
+
+                    // Exact name match gets highest score
+                    if (name === query) score += 100;
+                    // Name starts with query
+                    else if (name.startsWith(query)) score += 50;
+                    // Name contains query
+                    else if (name.includes(query)) score += 30;
+
+                    // Description contains query (lower priority)
+                    if (description.includes(query)) score += 10;
+
+                    // Category match (lowest priority)
+                    if (category.includes(query)) score += 5;
+
+                    return { product, score };
+                }).filter(item => item.score > 0)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 5)
+                    .map(item => item.product);
+
+                setSearchResults(scoredProducts);
+                setShowResults(scoredProducts.length > 0);
+            } catch (error) {
+                console.error('Error searching products:', error);
+            }
+        };
+
+        const debounce = setTimeout(searchProducts, 300);
+        return () => clearTimeout(debounce);
+    }, [searchQuery]);
+
+    // Close search results when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleProductClick = (productId: string) => {
+        setSearchQuery('');
+        setShowResults(false);
+        navigate(`/shop`); // Navigate to shop page - you could add product detail page later
+    };
+
     return (
         <header>
             <div className="container" style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                gap: '1rem',
+                flexWrap: 'wrap'
             }}>
                 <Link to="/" style={{
                     display: 'flex',
@@ -48,6 +127,115 @@ const Navbar = () => {
                     </svg>
                     TechStore
                 </Link>
+
+                {/* Search Bar */}
+                <div ref={searchRef} style={{
+                    position: 'relative',
+                    flex: '1',
+                    maxWidth: '400px',
+                    minWidth: '200px'
+                }}>
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.6rem 1rem',
+                            borderRadius: '25px',
+                            border: '2px solid var(--border-hover)',
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            color: 'inherit',
+                            fontSize: '0.9rem',
+                            outline: 'none',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                            e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)';
+                            if (searchResults.length > 0) setShowResults(true);
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--border-hover)';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                        }}
+                    />
+
+                    {/* Search Results Dropdown */}
+                    {showResults && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 'calc(100% + 0.5rem)',
+                            left: 0,
+                            right: 0,
+                            background: 'var(--card-bg)',
+                            backdropFilter: 'blur(20px)',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border-color)',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                            maxHeight: '400px',
+                            overflowY: 'auto',
+                            zIndex: 1000
+                        }}>
+                            {searchResults.map((product) => (
+                                <div
+                                    key={product.id}
+                                    onClick={() => handleProductClick(product.id)}
+                                    style={{
+                                        display: 'flex',
+                                        gap: '1rem',
+                                        padding: '0.75rem',
+                                        cursor: 'pointer',
+                                        borderBottom: '1px solid var(--border-color)',
+                                        transition: 'background 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }}
+                                >
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        style={{
+                                            width: '50px',
+                                            height: '50px',
+                                            objectFit: 'cover',
+                                            borderRadius: '8px'
+                                        }}
+                                    />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{
+                                            fontWeight: '600',
+                                            fontSize: '0.9rem',
+                                            marginBottom: '0.25rem',
+                                            color: 'inherit'
+                                        }}>
+                                            {product.name}
+                                        </div>
+                                        <div style={{
+                                            fontSize: '0.75rem',
+                                            color: 'var(--text-muted)'
+                                        }}>
+                                            {product.category}
+                                        </div>
+                                    </div>
+                                    <div style={{
+                                        fontWeight: '700',
+                                        color: 'var(--accent-primary)',
+                                        fontSize: '0.9rem'
+                                    }}>
+                                        ${product.price}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 <nav style={{
                     display: 'flex',
