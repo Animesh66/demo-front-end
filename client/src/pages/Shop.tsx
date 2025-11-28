@@ -13,7 +13,17 @@ const Shop = () => {
                 // Use 127.0.0.1 to avoid potential localhost DNS delays
                 const response = await fetch('http://127.0.0.1:3000/api/products');
                 const data = await response.json();
-                setProducts(data);
+                // Apply sale price to selective items (e.g., every 3rd item)
+                const productsWithSales = data.map((product: Product, index: number) => {
+                    if ((index + 1) % 3 === 0) {
+                        return {
+                            ...product,
+                            salePrice: Math.floor(product.price * 0.8) // 20% off
+                        };
+                    }
+                    return product;
+                });
+                setProducts(productsWithSales);
             } catch (error) {
                 console.error('Error fetching products:', error);
             } finally {

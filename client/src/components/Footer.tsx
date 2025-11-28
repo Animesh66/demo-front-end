@@ -3,15 +3,7 @@ import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer
-      style={{
-        background: '#f8f9fa', // Light background
-        color: '#2d3748', // Dark text for contrast
-        padding: '3rem 0',
-        marginTop: 'auto',
-        borderTop: '1px solid #e2e8f0'
-      }}
-    >
+    <footer className="site-footer">
       <div className="container" style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -40,19 +32,19 @@ const Footer: React.FC = () => {
             Shop Now
           </Link>
 
-          <Link to="/" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>
+          <Link to="/" style={{ color: 'inherit', textDecoration: 'none', fontWeight: '500' }}>
             Home
           </Link>
 
-          <Link to="/login" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>
+          <Link to="/login" style={{ color: 'inherit', textDecoration: 'none', fontWeight: '500' }}>
             Login
           </Link>
 
-          <Link to="/register" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>
+          <Link to="/register" style={{ color: 'inherit', textDecoration: 'none', fontWeight: '500' }}>
             Register
           </Link>
 
-          <Link to="/terms" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>
+          <Link to="/terms" style={{ color: 'inherit', textDecoration: 'none', fontWeight: '500' }}>
             Terms of Service
           </Link>
         </nav>

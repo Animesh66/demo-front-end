@@ -41,6 +41,51 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 40px var(--accent-glow);
+
+  /* Reversed Header/Footer Colors (Dark Theme = Light Header/Footer) */
+  --header-footer-bg: rgba(255, 255, 255, 0.9);
+  --header-footer-text: #2d3748;
+  --header-footer-border: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] {
+  /* Background Colors */
+  --bg-primary: #f7fafc;
+  --bg-secondary: #edf2f7;
+  --bg-tertiary: #e2e8f0;
+
+  /* Card & Surface Colors */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-hover: rgba(255, 255, 255, 0.95);
+
+  /* Text Colors */
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+
+  /* Accent Colors - Adjusted for Light Mode */
+  --accent-primary: #5a67d8;
+  --accent-secondary: #6b46c1;
+  --accent-tertiary: #d53f8c;
+  --accent-glow: rgba(90, 103, 216, 0.2);
+
+  /* Border & Divider */
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(90, 103, 216, 0.3);
+
+  /* Glass Effect */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+  /* Reversed Header/Footer Colors (Light Theme = Dark Header/Footer) */
+  --header-footer-bg: rgba(15, 22, 41, 0.95);
+  --header-footer-text: #ffffff;
+  --header-footer-border: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -263,14 +308,26 @@ button {
 
 /* Header */
 header {
-  background: var(--glass-bg);
+  background: var(--header-footer-bg);
+  color: var(--header-footer-text);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--header-footer-border);
   position: sticky;
   top: 0;
   z-index: 100;
   padding: 1.25rem 0;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Site Footer */
+.site-footer {
+  background: var(--header-footer-bg);
+  color: var(--header-footer-text);
+  border-top: 1px solid var(--header-footer-border);
+  padding: 3rem 0;
+  margin-top: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Loading Spinner */
@@ -305,6 +362,18 @@ header {
 
 .fade-in {
   animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes flash {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Page Transition Animation */

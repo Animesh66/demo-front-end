@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const { cart } = useCart();
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -35,8 +37,8 @@ const Navbar = () => {
                 }}>
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                         <rect width="32" height="32" rx="8" fill="url(#gradient)" />
-                        <path d="M16 8L20 12H18V20H14V12H12L16 8Z" fill="white" />
-                        <path d="M10 22H22V24H10V22Z" fill="white" />
+                        <path d="M16 8L20 12H18V20H14V12H12L16 8Z" fill="currentColor" />
+                        <path d="M10 22H22V24H10V22Z" fill="currentColor" />
                         <defs>
                             <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
                                 <stop offset="0%" stopColor="#667eea" />
@@ -54,6 +56,25 @@ const Navbar = () => {
                     flexWrap: 'wrap',
                     justifyContent: 'flex-end'
                 }}>
+                    <button
+                        onClick={toggleTheme}
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '0.5rem',
+                            fontSize: '1.2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'inherit',
+                            transition: 'transform 0.3s ease'
+                        }}
+                        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                    >
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
+
                     <Link
                         to="/shop"
                         className="btn btn-primary"
@@ -69,7 +90,7 @@ const Navbar = () => {
                     <Link
                         to="/"
                         style={{
-                            color: 'var(--text-primary)',
+                            color: 'inherit',
                             fontWeight: '500',
                             transition: 'color 0.3s ease'
                         }}
@@ -83,7 +104,7 @@ const Navbar = () => {
                                 to="/cart"
                                 style={{
                                     position: 'relative',
-                                    color: 'var(--text-primary)',
+                                    color: 'inherit',
                                     fontWeight: '500',
                                     transition: 'color 0.3s ease'
                                 }}
@@ -112,7 +133,7 @@ const Navbar = () => {
                             <Link
                                 to="/my-account"
                                 style={{
-                                    color: 'var(--text-primary)',
+                                    color: 'inherit',
                                     fontWeight: '500',
                                     transition: 'color 0.3s ease'
                                 }}
@@ -121,7 +142,8 @@ const Navbar = () => {
                             </Link>
 
                             <span style={{
-                                color: 'var(--text-secondary)',
+                                color: 'inherit',
+                                opacity: 0.8,
                                 fontSize: '0.9rem',
                                 fontWeight: '500'
                             }}>
@@ -130,10 +152,13 @@ const Navbar = () => {
 
                             <button
                                 onClick={handleLogout}
-                                className="btn btn-secondary"
+                                className="btn"
                                 style={{
                                     padding: '0.5rem 1.25rem',
-                                    fontSize: '0.9rem'
+                                    fontSize: '0.9rem',
+                                    background: 'rgba(128, 128, 128, 0.1)',
+                                    border: '1px solid currentColor',
+                                    color: 'inherit'
                                 }}
                             >
                                 Logout
@@ -144,7 +169,7 @@ const Navbar = () => {
                             <Link
                                 to="/login"
                                 style={{
-                                    color: 'var(--text-primary)',
+                                    color: 'inherit',
                                     fontWeight: '500',
                                     transition: 'color 0.3s ease'
                                 }}

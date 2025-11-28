@@ -7,6 +7,7 @@ export interface Product {
     description: string;
     image: string;
     category: string; // New field for filtering
+    salePrice?: number; // Optional sale price
 }
 
 interface CartItem extends Product {

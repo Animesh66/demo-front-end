@@ -1,23 +1,26 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import blackFridayImg from '../assets/black_friday_tech.png';
+import christmasImg from '../assets/christmas_sale.png';
+import newYearImg from '../assets/new_year_sale.png';
 
 const promos = [
     {
         id: 'bf',
         title: 'Black Friday Sale',
-        image: 'https://images.unsplash.com/photo-1580910051077-6c2a0d5e5c4e?w=1200&auto=format&fit=crop&q=60',
+        image: blackFridayImg,
         link: '/shop' // could link to a collection page
     },
     {
         id: 'xmas',
         title: 'Christmas Sale',
-        image: 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=1200&auto=format&fit=crop&q=60',
+        image: christmasImg,
         link: '/shop'
     },
     {
         id: 'ny',
         title: 'New Year Sale',
-        image: 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200&auto=format&fit=crop&q=60',
+        image: newYearImg,
         link: '/shop'
     }
 ];

@@ -47,21 +47,40 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         e.currentTarget.style.transform = 'scale(1)';
                     }}
                 />
-                <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-                    color: '#fff',
-                    padding: '0.4rem 0.8rem',
-                    borderRadius: '8px',
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    boxShadow: '0 4px 12px var(--accent-glow)',
-                    letterSpacing: '0.5px'
-                }}>
-                    NEW
-                </div>
+                {product.salePrice ? (
+                    <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'var(--danger)',
+                        color: '#fff',
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: '8px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        boxShadow: '0 4px 12px var(--danger-glow)',
+                        letterSpacing: '0.5px',
+                        animation: 'flash 1.5s infinite'
+                    }}>
+                        SALE
+                    </div>
+                ) : (
+                    <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                        color: '#fff',
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: '8px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        boxShadow: '0 4px 12px var(--accent-glow)',
+                        letterSpacing: '0.5px'
+                    }}>
+                        NEW
+                    </div>
+                )}
             </div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -105,17 +124,38 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         }}>
                             Price
                         </span>
-                        <span style={{
-                            fontSize: '1.75rem',
-                            fontWeight: '800',
-                            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                            lineHeight: '1'
-                        }}>
-                            ${product.price}
-                        </span>
+                        {product.salePrice ? (
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+                                <span style={{
+                                    fontSize: '1rem',
+                                    textDecoration: 'line-through',
+                                    color: 'var(--text-muted)',
+                                    fontWeight: '500'
+                                }}>
+                                    ${product.price}
+                                </span>
+                                <span style={{
+                                    fontSize: '1.75rem',
+                                    fontWeight: '800',
+                                    color: 'var(--danger)',
+                                    lineHeight: '1'
+                                }}>
+                                    ${product.salePrice}
+                                </span>
+                            </div>
+                        ) : (
+                            <span style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '800',
+                                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text',
+                                lineHeight: '1'
+                            }}>
+                                ${product.price}
+                            </span>
+                        )}
                     </div>
 
                     <button
