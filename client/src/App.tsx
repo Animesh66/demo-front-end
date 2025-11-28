@@ -15,6 +15,8 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const MyAccount = lazy(() => import('./pages/MyAccount'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const Shop = lazy(() => import('./pages/Shop'));
+const SuccessPage = lazy(() => import('./pages/SuccessPage'));
+const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -46,6 +48,8 @@ function App() {
             <Route path="/my-account" element={<MyAccount />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/success" element={<SuccessPage />} />
+            <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </Suspense>
         <Footer />

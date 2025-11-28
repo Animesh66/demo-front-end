@@ -69,8 +69,46 @@ const Checkout = () => {
             return;
         }
 
+        // Luhn Algorithm for card validation
+        const validateCardNumber = (number: string) => {
+            const digits = number.replace(/\s/g, '').split('').map(Number);
+            let sum = 0;
+            let isSecond = false;
+            for (let i = digits.length - 1; i >= 0; i--) {
+                let d = digits[i];
+                if (isSecond) {
+                    d *= 2;
+                    if (d > 9) d -= 9;
+                }
+                sum += d;
+                isSecond = !isSecond;
+            }
+            return sum % 10 === 0;
+        };
+
+        if (!validateCardNumber(cardNumber)) {
+            setError('Invalid card number');
+            return;
+        }
+
         if (!expiryDate.match(/^\d{2}\/\d{2}$/)) {
             setError('Invalid expiry date format (MM/YY)');
+            return;
+        }
+
+        // Expiry Date Validation
+        const [expMonth, expYear] = expiryDate.split('/').map(Number);
+        const now = new Date();
+        const currentYear = now.getFullYear() % 100; // Get last two digits of year
+        const currentMonth = now.getMonth() + 1; // 1-indexed
+
+        if (expMonth < 1 || expMonth > 12) {
+            setError('Invalid expiry month');
+            return;
+        }
+
+        if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+            setError('Card has expired');
             return;
         }
 
@@ -107,12 +145,26 @@ const Checkout = () => {
             // Simulate payment processing
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            alert('🎉 Payment successful! Your order has been placed.');
+            const orderDetails = {
+                total,
+                paymentMethod: paymentMethod.toUpperCase(),
+                items: cart.map(item => ({
+                    productName: item.name,
+                    quantity: item.quantity,
+                    productPrice: item.price
+                }))
+            };
+
             clearCart();
-            navigate('/my-account');
-        } catch (err) {
+            navigate('/success', { state: { orderDetails } });
+        } catch (err: any) {
             console.error('Error placing order:', err);
-            setError('Payment failed. Please try again.');
+            navigate('/error', {
+                state: {
+                    error: 'Payment Failed',
+                    reason: err.message || 'Transaction declined by bank'
+                }
+            });
         } finally {
             setIsProcessing(false);
         }
