@@ -177,7 +177,8 @@ const Navbar = () => {
                             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
                             maxHeight: '400px',
                             overflowY: 'auto',
-                            zIndex: 1000
+                            zIndex: 1000,
+                            color: 'var(--text-primary)'
                         }}>
                             {searchResults.map((product) => (
                                 <div
@@ -213,7 +214,7 @@ const Navbar = () => {
                                             fontWeight: '600',
                                             fontSize: '0.9rem',
                                             marginBottom: '0.25rem',
-                                            color: 'inherit'
+                                            color: 'var(--text-primary)'
                                         }}>
                                             {product.name}
                                         </div>
