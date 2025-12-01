@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 // Lazy load all page components for code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -18,6 +19,7 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const Shop = lazy(() => import('./pages/Shop'));
 const SuccessPage = lazy(() => import('./pages/SuccessPage'));
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
+const ProductDetails = lazy(() => import('./pages/ProductDetails'));
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -39,22 +41,25 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <ThemeProvider>
-          <Navbar />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/my-account" element={<MyAccount />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/success" element={<SuccessPage />} />
-              <Route path="/error" element={<ErrorPage />} />
-            </Routes>
-          </Suspense>
-          <Footer />
+          <ToastProvider>
+            <Navbar />
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/my-account" element={<MyAccount />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/success" element={<SuccessPage />} />
+                <Route path="/error" element={<ErrorPage />} />
+              </Routes>
+            </Suspense>
+            <Footer />
+          </ToastProvider>
         </ThemeProvider>
       </CartProvider>
     </AuthProvider>

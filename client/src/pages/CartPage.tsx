@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const CartPage = () => {
-    const { cart, removeFromCart, total } = useCart();
+    const { cart, removeFromCart, updateQuantity, total } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -95,108 +95,161 @@ const CartPage = () => {
                     flexDirection: 'column',
                     gap: '1.5rem'
                 }}>
-                    {cart.map(item => (
-                        <div
-                            key={item.id}
-                            className="card"
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '120px 1fr auto',
-                                gap: '1.5rem',
-                                alignItems: 'center',
-                                padding: '1.5rem'
-                            }}
-                        >
-                            <div style={{
-                                position: 'relative',
-                                overflow: 'hidden',
-                                borderRadius: '12px',
-                                background: 'rgba(0, 0, 0, 0.2)'
-                            }}>
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    style={{
-                                        width: '120px',
-                                        height: '120px',
-                                        objectFit: 'cover',
-                                        display: 'block'
-                                    }}
-                                />
-                            </div>
-
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <h3 style={{
-                                    marginBottom: '0.5rem',
-                                    fontSize: '1.25rem',
-                                    fontWeight: '700'
-                                }}>
-                                    {item.name}
-                                </h3>
-                                <p style={{
-                                    color: 'var(--text-secondary)',
-                                    fontSize: '0.95rem',
-                                    marginBottom: '0.75rem'
-                                }}>
-                                    ${item.price} each
-                                </p>
-                                <div style={{
-                                    display: 'inline-flex',
+                    {cart.map(item => {
+                        const itemPrice = item.salePrice || item.price;
+                        return (
+                            <div
+                                key={item.cartItemId}
+                                className="card"
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '120px 1fr auto',
+                                    gap: '1.5rem',
                                     alignItems: 'center',
-                                    gap: '0.75rem',
-                                    padding: '0.5rem 1rem',
-                                    background: 'rgba(255, 255, 255, 0.05)',
-                                    borderRadius: '8px',
-                                    border: '1px solid var(--border-color)'
-                                }}>
-                                    <span style={{
-                                        color: 'var(--text-secondary)',
-                                        fontSize: '0.85rem',
-                                        fontWeight: '600'
-                                    }}>
-                                        Quantity:
-                                    </span>
-                                    <span style={{
-                                        fontWeight: '700',
-                                        color: 'var(--accent-primary)',
-                                        fontSize: '1.1rem'
-                                    }}>
-                                        {item.quantity}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-end',
-                                gap: '1rem'
-                            }}>
+                                    padding: '1.5rem'
+                                }}
+                            >
                                 <div style={{
-                                    fontWeight: '800',
-                                    fontSize: '1.5rem',
-                                    background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text'
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    borderRadius: '12px',
+                                    background: 'rgba(0, 0, 0, 0.2)'
                                 }}>
-                                    ${item.price * item.quantity}
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        style={{
+                                            width: '120px',
+                                            height: '120px',
+                                            objectFit: 'cover',
+                                            display: 'block'
+                                        }}
+                                    />
                                 </div>
-                                <button
-                                    onClick={() => removeFromCart(item.id)}
-                                    className="btn btn-secondary"
-                                    style={{
-                                        color: 'var(--danger)',
-                                        borderColor: 'var(--danger)',
+
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h3 style={{
+                                        marginBottom: '0.5rem',
+                                        fontSize: '1.25rem',
+                                        fontWeight: '700'
+                                    }}>
+                                        {item.name}
+                                    </h3>
+
+                                    {/* Show options if available */}
+                                    {item.options && (
+                                        <p style={{
+                                            color: 'var(--text-secondary)',
+                                            fontSize: '0.85rem',
+                                            marginBottom: '0.5rem'
+                                        }}>
+                                            {item.options.color && `Color: ${item.options.color}`}
+                                            {item.options.color && item.options.configuration && ' • '}
+                                            {item.options.configuration && `Config: ${item.options.configuration}`}
+                                        </p>
+                                    )}
+
+                                    <p style={{
+                                        color: 'var(--text-secondary)',
+                                        fontSize: '0.95rem',
+                                        marginBottom: '0.75rem'
+                                    }}>
+                                        {item.salePrice ? (
+                                            <>
+                                                <span style={{ textDecoration: 'line-through', marginRight: '0.5rem' }}>
+                                                    ${item.price}
+                                                </span>
+                                                <span style={{ color: 'var(--danger)', fontWeight: '600' }}>
+                                                    ${item.salePrice} each
+                                                </span>
+                                            </>
+                                        ) : (
+                                            `$${item.price} each`
+                                        )}
+                                    </p>
+
+                                    {/* Quantity controls */}
+                                    <div style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.75rem',
                                         padding: '0.5rem 1rem',
-                                        fontSize: '0.85rem'
-                                    }}
-                                >
-                                    Remove
-                                </button>
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--border-color)'
+                                    }}>
+                                        <button
+                                            onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--text-primary)',
+                                                cursor: 'pointer',
+                                                fontSize: '1.2rem',
+                                                padding: '0 0.5rem',
+                                                fontWeight: '700'
+                                            }}
+                                        >
+                                            −
+                                        </button>
+                                        <span style={{
+                                            fontWeight: '700',
+                                            color: 'var(--accent-primary)',
+                                            fontSize: '1.1rem',
+                                            minWidth: '30px',
+                                            textAlign: 'center'
+                                        }}>
+                                            {item.quantity}
+                                        </span>
+                                        <button
+                                            onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--text-primary)',
+                                                cursor: 'pointer',
+                                                fontSize: '1.2rem',
+                                                padding: '0 0.5rem',
+                                                fontWeight: '700'
+                                            }}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-end',
+                                    gap: '1rem'
+                                }}>
+                                    <div style={{
+                                        fontWeight: '800',
+                                        fontSize: '1.5rem',
+                                        background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        backgroundClip: 'text'
+                                    }}>
+                                        ${itemPrice * item.quantity}
+                                    </div>
+                                    <button
+                                        onClick={() => removeFromCart(item.cartItemId)}
+                                        className="btn btn-secondary"
+                                        style={{
+                                            color: 'var(--danger)',
+                                            borderColor: 'var(--danger)',
+                                            padding: '0.5rem 1rem',
+                                            fontSize: '0.85rem'
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
 
                 {/* Order Summary */}

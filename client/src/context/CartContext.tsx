@@ -6,18 +6,26 @@ export interface Product {
     price: number;
     description: string;
     image: string;
-    category: string; // New field for filtering
-    salePrice?: number; // Optional sale price
+    category: string;
+    salePrice?: number;
 }
 
-interface CartItem extends Product {
+export interface CartItemOptions {
+    color?: string;
+    configuration?: string;
+}
+
+export interface CartItem extends Product {
     quantity: number;
+    options?: CartItemOptions;
+    cartItemId: string; // Unique ID for cart item (product + options combo)
 }
 
 interface CartContextType {
     cart: CartItem[];
-    addToCart: (product: Product) => void;
-    removeFromCart: (productId: string) => void;
+    addToCart: (product: Product, quantity?: number, options?: CartItemOptions) => void;
+    removeFromCart: (cartItemId: string) => void;
+    updateQuantity: (cartItemId: string, quantity: number) => void;
     clearCart: () => void;
     total: number;
 }
@@ -27,30 +35,59 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
 
-    const addToCart = (product: Product) => {
+    const generateCartItemId = (productId: string, options?: CartItemOptions) => {
+        const optionsStr = options ? `_${options.color}_${options.configuration}` : '';
+        return `${productId}${optionsStr}`;
+    };
+
+    const addToCart = (product: Product, quantity: number = 1, options?: CartItemOptions) => {
         setCart(prev => {
-            const existing = prev.find(item => item.id === product.id);
+            const cartItemId = generateCartItemId(product.id, options);
+            const existing = prev.find(item => item.cartItemId === cartItemId);
+
             if (existing) {
                 return prev.map(item =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+                    item.cartItemId === cartItemId
+                        ? { ...item, quantity: item.quantity + quantity }
+                        : item
                 );
             }
-            return [...prev, { ...product, quantity: 1 }];
+
+            return [...prev, {
+                ...product,
+                quantity,
+                options,
+                cartItemId
+            }];
         });
     };
 
-    const removeFromCart = (productId: string) => {
-        setCart(prev => prev.filter(item => item.id !== productId));
+    const removeFromCart = (cartItemId: string) => {
+        setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
+    };
+
+    const updateQuantity = (cartItemId: string, quantity: number) => {
+        if (quantity <= 0) {
+            removeFromCart(cartItemId);
+            return;
+        }
+        setCart(prev => prev.map(item =>
+            item.cartItemId === cartItemId ? { ...item, quantity } : item
+        ));
     };
 
     const clearCart = () => {
         setCart([]);
     };
 
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Calculate total using salePrice if available
+    const total = cart.reduce((sum, item) => {
+        const itemPrice = item.salePrice || item.price;
+        return sum + itemPrice * item.quantity;
+    }, 0);
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, total }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, total }}>
             {children}
         </CartContext.Provider>
     );

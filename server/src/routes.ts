@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { register, login } from './controllers/authController';
-import { getProducts } from './controllers/productController';
+import { getProducts, getProduct } from './controllers/productController';
 import { placeOrder, getOrders } from './controllers/orderController';
 
 const router = Router();
@@ -11,6 +11,7 @@ router.post('/auth/login', login);
 
 // Products
 router.get('/products', getProducts);
+router.get('/products/:id', getProduct);
 
 // Orders
 router.post('/orders', placeOrder);

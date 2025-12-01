@@ -33,7 +33,7 @@ const Navbar = () => {
             }
 
             try {
-                const response = await fetch('http://127.00.1:3000/api/products');
+                const response = await fetch('http://127.0.0.1:3000/api/products');
                 const products: Product[] = await response.json();
 
                 const query = searchQuery.toLowerCase();
@@ -90,7 +90,7 @@ const Navbar = () => {
     const handleProductClick = (productId: string) => {
         setSearchQuery('');
         setShowResults(false);
-        navigate(`/shop`); // Navigate to shop page - you could add product detail page later
+        navigate(`/product/${productId}`);
     };
 
     return (
