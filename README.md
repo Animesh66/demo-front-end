@@ -194,7 +194,12 @@ npx tsc
 
 ## Notes
 
-- **Data Persistence**: This demo uses in-memory storage. Data will be lost when the server restarts. For production, integrate a real database (MongoDB, PostgreSQL, etc.)
+- **Data Persistence**: This application connects to a local MongoDB instance. Data is stored persistently in the `demo-app` database.
+
+- **Database Management**: You can explore and manage your local database using UI tools like **MongoDB Compass**:
+  1. Download and open [MongoDB Compass](https://www.mongodb.com/products/tools/compass).
+  2. Create a new connection with the URI: `mongodb://127.0.0.1:27017`
+  3. Look for the `demo-app` database to see the `users`, `products`, and `orders` collections.
 
 - **Security**: The JWT secret key is hardcoded for demo purposes. In production, use environment variables and secure secret management.
 
@@ -202,7 +207,7 @@ npx tsc
 
 ## Future Enhancements
 
-- [ ] Add database integration (MongoDB/PostgreSQL)
+- [x] Add database integration (MongoDB/PostgreSQL)
 - [ ] Implement product search and filtering
 - [ ] Add product categories
 - [ ] User profile management
