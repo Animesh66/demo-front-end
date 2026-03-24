@@ -29,7 +29,7 @@ const UserSchema = new Schema<IUser>({
     name:         { type: String, required: true, trim: true },
     gender:       { type: String },
     dateOfBirth:  { type: String },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 export const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
@@ -49,7 +49,7 @@ const ProductSchema = new Schema<IProduct>({
     description: { type: String, required: true },
     image:       { type: String, required: true },
     category:    { type: String, required: true },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 export const ProductModel: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
 
@@ -76,7 +76,7 @@ const OrderSchema = new Schema<IOrder>({
     date:          { type: String, required: true },
     paymentMethod: { type: String, default: 'Not specified' },
     status:        { type: String, default: 'Completed' },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 export const OrderModel: Model<IOrder> = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
 
