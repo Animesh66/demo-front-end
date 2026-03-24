@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { orders, Order } from '../db';
+import { OrderModel } from '../db';
 
-export const placeOrder = (req: Request, res: Response) => {
+export const placeOrder = async (req: Request, res: Response): Promise<void> => {
     const { userId, items, total, paymentMethod } = req.body;
 
     if (!userId || !items || items.length === 0) {
@@ -9,28 +9,27 @@ export const placeOrder = (req: Request, res: Response) => {
         return;
     }
 
-    const newOrder: Order = {
-        id: Date.now().toString(),
+    const newOrder = new OrderModel({
         userId,
         items,
         total,
-        date: new Date().toISOString(),
+        date:          new Date().toISOString(),
         paymentMethod: paymentMethod || 'Not specified',
-        status: 'Completed'
-    };
+        status:        'Completed',
+    });
 
-    orders.push(newOrder);
+    await newOrder.save();
 
     res.status(201).json({ message: 'Order placed successfully', order: newOrder });
 };
 
-export const getOrders = (req: Request, res: Response) => {
+export const getOrders = async (req: Request, res: Response): Promise<void> => {
     const userId = req.query.userId as string;
     if (!userId) {
         res.status(400).json({ message: 'User ID required' });
         return;
     }
 
-    const userOrders = orders.filter(o => o.userId === userId);
+    const userOrders = await OrderModel.find({ userId });
     res.json(userOrders);
 };

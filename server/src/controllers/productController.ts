@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
-import { products } from '../db';
+import { ProductModel } from '../db';
 
-export const getProducts = (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response): Promise<void> => {
+    const products = await ProductModel.find();
     res.json(products);
 };
 
-export const getProduct = (req: Request, res: Response) => {
-    const product = products.find(p => p.id === req.params.id);
+export const getProduct = async (req: Request, res: Response): Promise<void> => {
+    const product = await ProductModel.findById(req.params.id);
     if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
+        res.status(404).json({ message: 'Product not found' });
+        return;
     }
     res.json(product);
 };
