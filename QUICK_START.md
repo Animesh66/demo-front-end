@@ -1,18 +1,91 @@
 # Quick Start Guide
 
+## Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+- **Node.js** (v16 or higher) - [Download here](https://nodejs.org/)
+- **npm** (comes with Node.js)
+- **MongoDB** (required for database) - See installation instructions below
+
+### MongoDB Installation
+
+#### macOS
+```bash
+# Using Homebrew
+brew tap mongodb/brew
+brew install mongodb-community
+
+# Start MongoDB
+brew services start mongodb-community
+```
+
+#### Windows
+1. Download MongoDB from [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+2. Run the installer and follow the setup wizard
+3. MongoDB will run as a Windows service automatically
+
+#### Linux (Ubuntu/Debian)
+```bash
+# Import MongoDB public GPG key
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+# Create list file
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+# Install MongoDB
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+# Start MongoDB
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+
+### Verify MongoDB Installation
+```bash
+# Check if MongoDB is running
+mongosh --eval "db.version()"
+```
+
+If MongoDB is running correctly, you should see the version number displayed.
+
 ## Running the Application
 
 ### Option 1: Using the Quick Start Script (Recommended)
-```bash
-# Make the script executable (first time only)
-chmod +x quick-start.sh
 
-# Run the application
-./quick-start.sh
+**Step 1: Ensure MongoDB is Running**
+```bash
+# macOS (if not running as service)
+brew services start mongodb-community
+
+# Linux
+sudo systemctl start mongod
+
+# Or start manually (all platforms)
+mongod
 ```
 
+**Step 2: Run the Application**
+```bash
+
+**Terminal 1: Start MongoDB (if not running)**
+```bash
+mongod
+```
+
+**Terminal 2: Start the Backend**
+```bash
+cd server
+npm install
+npm start
+```
+
+**Terminal 3: Start the Frontend**
+```bash
 This will:
 - Install all dependencies for both client and server
+- Connect to MongoDB at `mongodb://127.0.0.1:27017/demo-app`
 - Start the backend server on http://localhost:3000
 - Start the frontend dev server on http://localhost:5173
 - Open the application in your default browser
@@ -121,13 +194,22 @@ demo-front-end/
 │   ├── src/
 │   │   ├── controllers/   # Route controllers
 │   │   ├── db.ts          # In-memory database
-│   │   ├── routes.ts      # API routes
-│   │   └── index.ts       # Server entry point
-│   └── package.json
-└── README.md
-```
+│   MongoDB Connection Error
+If you see `❌ MongoDB connection error`:
+```bash
+# Check if MongoDB is running
+mongosh --eval "db.version()"
 
-## Troubleshooting
+# If not running, start it:
+# macOS
+brew services start mongodb-community
+
+# Linux
+sudo systemctl start mongod
+
+# Manual start (all platforms)
+mongod
+```
 
 ### Port Already in Use
 If you get a "port already in use" error:
@@ -137,8 +219,29 @@ lsof -ti:3000 | xargs kill -9
 
 # Kill process on port 5173 (frontend)
 lsof -ti:5173 | xargs kill -9
+
+# Kill MongoDB (port 27017) if needed
+lsof -ti:27017 | xargs kill -9
 ```
 
+### Dependencies Not Installing
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Remove node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### MongoDB Data Directory Error
+If MongoDB fails to start due to data directory issues:
+```bash
+# Create the data directory
+sudo mkdir -p /data/db
+
+# Set permissions (macOS/Linux)
+sudo chown -R $(whoami) /data/db
 ### Dependencies Not Installing
 ```bash
 # Clear npm cache

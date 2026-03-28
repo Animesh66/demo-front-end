@@ -35,10 +35,10 @@ A full-stack e-commerce application built with **React + TypeScript** (frontend)
 ### Backend
 - **Node.js** with Express
 - **TypeScript** for type safety
+- **MongoDB** with Mongoose for data persistence
 - **JWT** for authentication
 - **bcryptjs** for password hashing
 - **CORS** enabled
-- In-memory data storage (for demo purposes)
 
 ## Project Structure
 
@@ -56,7 +56,8 @@ demo-front-end/
 ├── server/                # Backend Express API
 │   ├── src/
 │   │   ├── controllers/   # Route handlers
-│   │   ├── db.ts          # In-memory database
+│   │   ├── middleware/    # Authentication middleware
+│   │   ├── db.ts          # MongoDB models and connection
 │   │   ├── routes.ts      # API routes
 │   │   └── index.ts       # Server entry point
 │   └── package.json
@@ -68,8 +69,30 @@ demo-front-end/
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
+- **MongoDB** - Must be installed and running locally
+  - macOS: `brew install mongodb-community && brew services start mongodb-community`
+  - Windows: [Download installer](https://www.mongodb.com/try/download/community)
+  - Linux: See [official docs](https://www.mongodb.com/docs/manual/installation/)
+  - Verify: `mongosh --eval "db.version()"`
 
-### Step 1: Install Dependencies
+### Step 1: Start MongoDB
+
+Ensure MongoDB is running before starting the application:
+
+```bash
+# macOS
+brew services start mongodb-community
+
+# Linux
+sudo systemctl start mongod
+
+# Manual start (all platforms)
+mongod
+```
+
+The application connects to `mongodb://127.0.0.1:27017/demo-app` by default.
+
+### Step 2: Install Dependencies
 
 ```bash
 # Install root dependencies
@@ -84,7 +107,7 @@ cd ../client
 npm install
 ```
 
-### Step 2: Run the Application
+### Step 3: Run the Application
 
 From the **root directory**, run both the backend and frontend simultaneously:
 
