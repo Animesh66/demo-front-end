@@ -1,10 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { OrderModel } from '../db';
+import { AuthRequest } from '../middleware/authMiddleware';
 
-export const placeOrder = async (req: Request, res: Response): Promise<void> => {
-    const { userId, items, total, paymentMethod } = req.body;
+export const placeOrder = async (req: AuthRequest, res: Response): Promise<void> => {
+    const { items, total, paymentMethod } = req.body;
+    const userId = req.userId; // Extract from authenticated token
 
-    if (!userId || !items || items.length === 0) {
+    if (!items || items.length === 0) {
         res.status(400).json({ message: 'Invalid order data' });
         return;
     }
@@ -23,12 +25,8 @@ export const placeOrder = async (req: Request, res: Response): Promise<void> => 
     res.status(201).json({ message: 'Order placed successfully', order: newOrder });
 };
 
-export const getOrders = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.query.userId as string;
-    if (!userId) {
-        res.status(400).json({ message: 'User ID required' });
-        return;
-    }
+export const getOrders = async (req: AuthRequest, res: Response): Promise<void> => {
+    const userId = req.userId; // Extract from authenticated token
 
     const userOrders = await OrderModel.find({ userId });
     res.json(userOrders);

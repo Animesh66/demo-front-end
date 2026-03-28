@@ -6,6 +6,30 @@ This document outlines the major REST endpoints available in the TechStore appli
 
 ---
 
+## Authentication Overview
+
+This API uses JWT (JSON Web Token) authentication for protected endpoints. 
+
+**How to authenticate:**
+1. Register a new user account using `POST /auth/register`
+2. Login using `POST /auth/login` to receive a JWT token
+3. Include the token in the `Authorization` header for protected endpoints:
+   ```
+   Authorization: Bearer <your_jwt_token>
+   ```
+
+**Protected Endpoints:**
+- `POST /orders` - Place a new order (requires authentication)
+- `GET /orders` - Get user's orders (requires authentication)
+
+**Public Endpoints:**
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login
+- `GET /products` - Get all products
+- `GET /products/:id` - Get single product
+
+---
+
 ## 1. Authentication Endpoints
 
 ### 1.1 Register User
@@ -62,7 +86,7 @@ Authenticate a user and retrieve a JWT token.
 ```
 
 **Expected Outcomes:**
-- **200 OK**: On successful authentication. You will receive a JWT token that can be copied (though currently, other routes do not strictly enforce token validation).
+- **200 OK**: On successful authentication. You will receive a JWT token that must be included in the `Authorization` header for protected endpoints (orders).
   ```json
   {
     "token": "eyJhbGciOiJIUzI1NiIsInR...",
@@ -75,6 +99,8 @@ Authenticate a user and retrieve a JWT token.
     }
   }
   ```
+  **⚠️ Important:** Copy the `token` value from the response. You will need to include it in the `Authorization` header as `Bearer <token>` for all protected endpoints (order-related endpoints).
+  
 - **400 Bad Request**: If credentials do not match or the user is not found.
   ```json
   {
@@ -144,17 +170,19 @@ Retrieve details of a single product using its unique MongoDB ID.
 
 ## 3. Order Endpoints
 
+**🔒 Authentication Required**: All order endpoints require authentication. You must include the JWT token received from login in the `Authorization` header.
+
 ### 3.1 Place an Order
-Submit a new user order.
+Submit a new user order. The user ID is automatically extracted from the authentication token.
 
 - **Method:** `POST`
 - **Endpoint:** `/orders`
 - **Headers:** 
   - `Content-Type: application/json`
+  - `Authorization: Bearer <your_jwt_token_here>`
 - **Payload (Body):**
 ```json
 {
-  "userId": "64bfc882f0c7743d8a9...",   // An actual user ID from login response
   "items": [
     {
       "productId": "64bfc882f0c77...",  // An actual product ID
@@ -195,20 +223,19 @@ Submit a new user order.
     }
   }
   ```
-- **400 Bad Request**: If `userId`, `items` are missing, or `items` array is empty.
+- **400 Bad Request**: If `items` are missing or `items` array is empty.
   ```json
   {
     "message": "Invalid order data"
   }
   ```
-
-### 3.2 Get User Orders
-Retrieve all prior associated orders for a specific user ID.
+- **401 Unautorders for the authenticated user. The user ID is automatically extracted from the authentication token.
 
 - **Method:** `GET`
 - **Endpoint:** `/orders`
-- **Headers:** `None` required.
-- **Query Parameters:** `userId` (e.g., `http://localhost:3000/api/orders?userId=64bfc882f0...`)
+- **Headers:** 
+  - `Authorization: Bearer <your_jwt_token_here>`
+- **Query Parameters:** None (user ID is extracted from the token)
 - **Payload:** `None`
 
 **Expected Outcomes:**
@@ -216,6 +243,26 @@ Retrieve all prior associated orders for a specific user ID.
   ```json
   [
     {
+      "userId": "64bfc882f0c7743d8a9...",
+      "items": [ ... ],
+      "total": 299,
+      "date": "2026-03-25T11:29:03.000Z",
+      "paymentMethod": "VISA",
+      "status": "Completed",
+      "id": "6732f91a2..."
+    }
+  ]
+  ```
+- **401 Unauthorized**: If the authentication token is missing, invalid, or expired.
+  ```json
+  {
+    "message": "Authentication required"
+  }
+  ```
+  or
+  ```json
+  {
+    "message": "Invalid or expired token
       "userId": "64bfc882f0c7743d8a9...",
       "items": [ ... ],
       "total": 299,

@@ -13,7 +13,7 @@ interface Order {
 }
 
 const MyAccount = () => {
-    const { user, logout, isLoading } = useAuth();
+    const { user, token, logout, isLoading } = useAuth();
     const navigate = useNavigate();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -33,7 +33,11 @@ const MyAccount = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/orders?userId=${user?.id}`);
+            const response = await fetch(`http://localhost:3000/api/orders`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             if (response.ok) {
                 const data = await response.json();
                 setOrders(data);

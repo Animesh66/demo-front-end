@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
 
     const [paymentMethod, setPaymentMethod] = useState('');
@@ -124,9 +124,9 @@ const Checkout = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    userId: user?.id,
                     items: cart.map(item => ({
                         productId: item.id,
                         quantity: item.quantity,
