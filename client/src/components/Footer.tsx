@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import React from 'react';
+import { memo } from 'react';
 
-const Footer: React.FC = () => {
+const Footer = memo(() => {
   return (
     <footer className="site-footer">
       <div className="container" style={{
@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
       </div>
     </footer>
   );
-};
+});
 
 export default Footer;
 

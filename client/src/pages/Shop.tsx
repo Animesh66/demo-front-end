@@ -147,14 +147,8 @@ const Shop = () => {
                         gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
                         gap: 'clamp(1rem, 3vw, 2rem)'
                     }}>
-                        {filteredProducts.map((product, index) => (
-                            <div
-                                key={product.id}
-                                className="fade-in"
-                                style={{
-                                    animationDelay: `${index * 0.05}s`
-                                }}
-                            >
+                        {filteredProducts.map((product) => (
+                            <div key={product.id} className="fade-in">
                                 <ProductCard product={product} />
                             </div>
                         ))}

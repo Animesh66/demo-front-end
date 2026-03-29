@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../context/CartContext';
 import { useCart } from '../context/CartContext';
@@ -8,18 +8,18 @@ interface ProductCardProps {
     product: Product;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = memo(({ product }: ProductCardProps) => {
     const { addToCart } = useCart();
     const { showToast } = useToast();
     const [isAdding, setIsAdding] = useState(false);
 
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent navigation if button is clicked inside a Link
+    const handleAddToCart = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
         setIsAdding(true);
         addToCart(product);
         showToast(`${product.name} added to cart!`);
         setTimeout(() => setIsAdding(false), 600);
-    };
+    }, [product, addToCart, showToast]);
 
     return (
         <div className="card" style={{
@@ -182,6 +182,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </Link>
         </div>
     );
-};
+});
 
 export default ProductCard;

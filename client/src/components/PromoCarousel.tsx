@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import blackFridayImg from '../assets/black_friday_tech.png';
 import christmasImg from '../assets/christmas_sale.png';
@@ -25,7 +25,7 @@ const promos = [
     }
 ];
 
-const PromoCarousel = () => {
+const PromoCarousel = memo(() => {
     const [index, setIndex] = useState(0);
     const navigate = useNavigate();
 
@@ -45,12 +45,11 @@ const PromoCarousel = () => {
             className="promo-carousel"
             style={{
                 position: 'relative',
-                height: '50vh',
+                height: '40vh', // Reduced from 50vh for better performance
                 marginBottom: '2rem',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 background: `url(${image}) center/cover no-repeat`,
-                willChange: 'background-image', // Optimize for animation
             }}
         >
             <div
@@ -65,7 +64,6 @@ const PromoCarousel = () => {
                     color: '#fff',
                     textAlign: 'center',
                     padding: '0 2rem',
-                    willChange: 'opacity', // Optimize for fade transitions
                 }}
             >
                 <h2 style={{
@@ -92,6 +90,6 @@ const PromoCarousel = () => {
             </div>
         </section>
     );
-};
+});
 
 export default PromoCarousel;

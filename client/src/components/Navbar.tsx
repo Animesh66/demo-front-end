@@ -1,11 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import type { Product } from '../context/CartContext';
 
-const Navbar = () => {
+// Cache products to avoid refetching on every search
+let productsCache: Product[] | null = null;
+
+const Navbar = memo(() => {
     const { user, logout, isAuthenticated } = useAuth();
     const { cart } = useCart();
     const { theme, toggleTheme } = useTheme();
@@ -21,9 +24,12 @@ const Navbar = () => {
         navigate('/login');
     };
 
-    const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+    const cartItemCount = useMemo(() => 
+        cart.reduce((acc, item) => acc + item.quantity, 0), 
+        [cart]
+    );
 
-    // Search products
+    // Search products with caching
     useEffect(() => {
         const searchProducts = async () => {
             if (searchQuery.trim().length < 2) {
@@ -33,13 +39,16 @@ const Navbar = () => {
             }
 
             try {
-                const response = await fetch('http://127.0.0.1:3000/api/products');
-                const products: Product[] = await response.json();
+                // Fetch products only if not cached
+                if (!productsCache) {
+                    const response = await fetch('http://127.0.0.1:3000/api/products');
+                    productsCache = await response.json();
+                }
 
                 const query = searchQuery.toLowerCase();
 
                 // Score each product based on match relevance
-                const scoredProducts = products.map(product => {
+                const scoredProducts = productsCache.map(product => {
                     let score = 0;
                     const name = product.name.toLowerCase();
                     const description = product.description.toLowerCase();
@@ -382,6 +391,6 @@ const Navbar = () => {
             </div>
         </header>
     );
-};
+});
 
 export default Navbar;

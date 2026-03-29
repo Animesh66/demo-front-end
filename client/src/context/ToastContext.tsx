@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
 
 interface Toast {
     id: string;
@@ -15,7 +15,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
-    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success') => {
         const id = Math.random().toString(36).substring(7);
         const newToast = { id, message, type };
 
@@ -25,10 +25,12 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         setTimeout(() => {
             setToasts(prev => prev.filter(t => t.id !== id));
         }, 3000);
-    };
+    }, []);
+
+    const value = useMemo(() => ({ showToast }), [showToast]);
 
     return (
-        <ToastContext.Provider value={{ showToast }}>
+        <ToastContext.Provider value={value}>
             {children}
 
             {/* Toast Container */}

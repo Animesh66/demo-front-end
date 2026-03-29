@@ -115,7 +115,7 @@ body {
   background-attachment: fixed;
 }
 
-/* Animated Background */
+/* Animated Background - Simplified */
 body::before {
   content: '';
   position: fixed;
@@ -129,7 +129,8 @@ body::before {
     radial-gradient(circle at 40% 20%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
-  animation: backgroundPulse 15s ease-in-out infinite;
+  animation: backgroundPulse 20s ease-in-out infinite;
+  will-change: opacity;
 }
 
 @keyframes backgroundPulse {
@@ -347,21 +348,19 @@ header {
   animation: spin 0.8s linear infinite;
 }
 
-/* Fade In Animation */
+/* Fade In Animation - Simplified */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .fade-in {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes flash {
@@ -376,31 +375,29 @@ header {
   }
 }
 
-/* Page Transition Animation */
+/* Page Transition Animation - Simplified */
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 /* Apply to all route containers */
 main,
 section {
-  animation: pageEnter 0.4s ease-out;
+  animation: pageEnter 0.2s ease-out;
 }
 
-/* Smooth transitions for interactive elements */
+/* Smooth transitions for interactive elements - Optimized */
 a,
 button,
 .card,
 .btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Optimize animations for performance */
