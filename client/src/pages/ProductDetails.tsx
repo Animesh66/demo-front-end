@@ -1,9 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart, type Product } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 
-const ProductDetails = () => {
+// Helper function moved outside component
+const getOptions = (category: string) => {
+    switch (category) {
+        case 'Electronics':
+            return {
+                colors: ['Black', 'Silver', 'White'],
+                configs: ['Standard', 'Pro', 'Max']
+            };
+        case 'Clothing':
+            return {
+                colors: ['Red', 'Blue', 'Black', 'Beige'],
+                configs: ['S', 'M', 'L', 'XL']
+            };
+        case 'Furniture':
+            return {
+                colors: ['Oak', 'Walnut', 'White', 'Black'],
+                configs: ['Standard']
+            };
+        default:
+            return {
+                colors: ['Standard'],
+                configs: ['Standard']
+            };
+    }
+};
+
+const ProductDetails = memo(() => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { addToCart } = useCart();
@@ -19,32 +45,6 @@ const ProductDetails = () => {
     const [selectedConfig, setSelectedConfig] = useState<string>('');
     const [isZoomed, setIsZoomed] = useState(false);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-    // Mock options based on category (simplified)
-    const getOptions = (category: string) => {
-        switch (category) {
-            case 'Electronics':
-                return {
-                    colors: ['Black', 'Silver', 'White'],
-                    configs: ['Standard', 'Pro', 'Max']
-                };
-            case 'Clothing':
-                return {
-                    colors: ['Red', 'Blue', 'Black', 'Beige'],
-                    configs: ['S', 'M', 'L', 'XL']
-                };
-            case 'Furniture':
-                return {
-                    colors: ['Oak', 'Walnut', 'White', 'Black'],
-                    configs: ['Standard']
-                };
-            default:
-                return {
-                    colors: ['Standard'],
-                    configs: ['Standard']
-                };
-        }
-    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -72,15 +72,15 @@ const ProductDetails = () => {
         }
     }, [id]);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (!isZoomed) return;
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
         const x = ((e.clientX - left) / width) * 100;
         const y = ((e.clientY - top) / height) * 100;
         setMousePos({ x, y });
-    };
+    }, [isZoomed]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = useCallback(() => {
         if (!product) return;
 
         addToCart(product, quantity, {
@@ -90,12 +90,12 @@ const ProductDetails = () => {
 
         // Show feedback
         showToast(`Added ${quantity} ${product.name}(s) (${selectedColor}, ${selectedConfig}) to cart!`);
-    };
+    }, [product, quantity, selectedColor, selectedConfig, addToCart, showToast]);
 
-    const handleBuyNow = () => {
+    const handleBuyNow = useCallback(() => {
         handleAddToCart();
         navigate('/cart');
-    };
+    }, [handleAddToCart, navigate]);
 
     if (loading) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -379,6 +379,6 @@ const ProductDetails = () => {
             </div>
         </div>
     );
-};
+});
 
 export default ProductDetails;

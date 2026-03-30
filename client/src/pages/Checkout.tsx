@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
-const Checkout = () => {
+const Checkout = memo(() => {
     const { cart, total, clearCart } = useCart();
     const { user, token } = useAuth();
     const navigate = useNavigate();
@@ -437,6 +437,6 @@ const Checkout = () => {
             </div>
         </div>
     );
-};
+});
 
 export default Checkout;

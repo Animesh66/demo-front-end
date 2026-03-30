@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import PromoCarousel from '../components/PromoCarousel';
 import ProductCard from '../components/ProductCard';
 import type { Product } from '../context/CartContext';
 
-const Home = () => {
+const Home = memo(() => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -128,6 +128,4 @@ const Home = () => {
             </section>
         </div>
     );
-};
-
-export default Home;
+});

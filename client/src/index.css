@@ -112,10 +112,12 @@ body {
   flex-direction: column;
   min-height: 100vh;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
-  background-attachment: fixed;
+  /* Removed background-attachment: fixed for performance */
 }
 
-/* Animated Background - Simplified */
+/* Animated Background - DISABLED for performance */ 
+/* Uncomment if you have a powerful device */ 
+/*
 body::before {
   content: '';
   position: fixed;
@@ -144,6 +146,7 @@ body::before {
     opacity: 0.8;
   }
 }
+*/
 
 a {
   text-decoration: none;
@@ -171,7 +174,7 @@ button {
   z-index: 1;
 }
 
-/* Buttons */
+/* Buttons - Optimized */
 .btn {
   padding: 0.875rem 2rem;
   border-radius: 12px;
@@ -184,26 +187,10 @@ button {
   gap: 0.5rem;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
+/* Removed expensive ::before effect for performance */
 
 .btn-primary {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
@@ -214,7 +201,7 @@ button {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--accent-glow);
+  box-shadow: 0 6px 25px var(--accent-glow);
 }
 
 .btn-primary:active {
@@ -234,14 +221,14 @@ button {
   transform: translateY(-2px);
 }
 
-/* Cards */
+/* Cards - Simplified for performance */
 .card {
   background: var(--card-bg);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px); /* Reduced from 20px */
   border-radius: 20px;
   padding: 2rem;
   border: 1px solid var(--border-color);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -263,10 +250,9 @@ button {
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transform: translateY(-4px); /* Reduced from 8px */
+  box-shadow: var(--shadow-lg);
   border-color: var(--border-hover);
-  background: var(--card-hover);
 }
 
 /* Input Fields */
@@ -293,7 +279,7 @@ button {
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  /* backdrop-filter removed for performance */
 }
 
 .input-field::placeholder {
@@ -307,11 +293,11 @@ button {
   box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
-/* Header */
+/* Header - Optimized */
 header {
   background: var(--header-footer-bg);
   color: var(--header-footer-text);
-  backdrop-filter: blur(20px);
+  /* backdrop-filter removed for performance */
   border-bottom: 1px solid var(--header-footer-border);
   position: sticky;
   top: 0;

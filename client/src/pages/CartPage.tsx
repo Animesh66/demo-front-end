@@ -1,19 +1,20 @@
+import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
-const CartPage = () => {
+const CartPage = memo(() => {
     const { cart, removeFromCart, updateQuantity, total } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const handleCheckout = () => {
+    const handleCheckout = useCallback(() => {
         if (!user) {
             navigate('/login');
             return;
         }
         navigate('/checkout');
-    };
+    }, [user, navigate]);
 
     if (cart.length === 0) {
         return (
@@ -350,6 +351,6 @@ const CartPage = () => {
             </div>
         </div>
     );
-};
+});
 
 export default CartPage;

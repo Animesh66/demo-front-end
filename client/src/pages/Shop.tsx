@@ -1,8 +1,8 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, memo } from 'react';
 import ProductCard from '../components/ProductCard';
 import type { Product } from '../context/CartContext';
 
-const Shop = () => {
+const Shop = memo(() => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -157,6 +157,6 @@ const Shop = () => {
             </section>
         </div>
     );
-};
+});
 
 export default Shop;
