@@ -159,4 +159,6 @@ const Shop = memo(() => {
     );
 });
 
+Shop.displayName = 'Shop';
+
 export default Shop;

@@ -381,4 +381,6 @@ const ProductDetails = memo(() => {
     );
 });
 
+ProductDetails.displayName = 'ProductDetails';
+
 export default ProductDetails;

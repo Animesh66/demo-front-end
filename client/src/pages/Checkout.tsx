@@ -439,4 +439,6 @@ const Checkout = memo(() => {
     );
 });
 
+Checkout.displayName = 'Checkout';
+
 export default Checkout;

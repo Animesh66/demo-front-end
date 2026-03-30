@@ -353,4 +353,6 @@ const CartPage = memo(() => {
     );
 });
 
+CartPage.displayName = 'CartPage';
+
 export default CartPage;
