@@ -184,4 +184,6 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
     );
 });
 
+ProductCard.displayName = 'ProductCard';
+
 export default ProductCard;

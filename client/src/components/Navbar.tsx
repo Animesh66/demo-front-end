@@ -392,5 +392,5 @@ const Navbar = memo(() => {
         </header>
     );
 });
-
+Navbar.displayName = 'Navbar';
 export default Navbar;

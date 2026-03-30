@@ -58,5 +58,7 @@ const Footer = memo(() => {
   );
 });
 
+Footer.displayName = 'Footer';
+
 export default Footer;
 

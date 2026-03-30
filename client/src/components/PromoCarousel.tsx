@@ -92,4 +92,6 @@ const PromoCarousel = memo(() => {
     );
 });
 
+PromoCarousel.displayName = 'PromoCarousel';
+
 export default PromoCarousel;
