@@ -22,6 +22,7 @@ This API uses JWT (JSON Web Token) authentication for protected endpoints.
 - `POST /orders` - Place a new order (requires authentication)
 - `GET /orders` - Get user's orders (requires authentication)
 - `PATCH /orders/:orderId/cancel` - Cancel an order (requires authentication)
+- `PATCH /orders/:orderId/status` - Manually update order status (requires authentication)
 
 **Public Endpoints:**
 - `POST /auth/register` - Register a new user
