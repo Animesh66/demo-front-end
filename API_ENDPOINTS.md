@@ -330,3 +330,77 @@ Orders in the system follow an automatic status progression:
 4. **cancelled** - Manual status when a user cancels an order (only possible for "new" orders).
 
 The system runs an automatic status update process every hour to transition orders through these statuses based on their creation time.
+
+### 3.4 Manually Update Order Status
+Manually update the status of an existing order. This allows you to override the automatic status progression.
+
+- **Method:** `PATCH`
+- **Endpoint:** `/orders/:orderId/status` (Replace `:orderId` with the actual order ID)
+- **Headers:** 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer <your_jwt_token_here>`
+- **Payload (Body):**
+```json
+{
+  "status": "shipped"
+}
+```
+
+**Valid Status Values:**
+- `new` - Order is newly placed
+- `shipped` - Order has been shipped
+- `delivered` - Order has been delivered
+- `cancelled` - Order is cancelled
+
+**Expected Outcomes:**
+- **200 OK**: When the order status is successfully updated.
+  ```json
+  {
+    "message": "Order status updated successfully",
+    "order": {
+      "userId": "64bfc882f0c7743d8a9...",
+      "items": [ ... ],
+      "total": 299,
+      "date": "2026-03-25T11:29:03.000Z",
+      "paymentMethod": "VISA",
+      "status": "shipped",
+      "id": "6732f91a2..."
+    }
+  }
+  ```
+- **400 Bad Request**: If the status field is missing.
+  ```json
+  {
+    "message": "Status is required"
+  }
+  ```
+- **400 Bad Request**: If an invalid status value is provided.
+  ```json
+  {
+    "message": "Invalid status. Valid statuses are: new, shipped, delivered, cancelled"
+  }
+  ```
+- **400 Bad Request**: If trying to update a cancelled order to another status.
+  ```json
+  {
+    "message": "Cannot update a cancelled order"
+  }
+  ```
+- **403 Forbidden**: If the order does not belong to the authenticated user.
+  ```json
+  {
+    "message": "Unauthorized to update this order"
+  }
+  ```
+- **404 Not Found**: If the order ID does not exist.
+  ```json
+  {
+    "message": "Order not found"
+  }
+  ```
+- **401 Unauthorized**: If the authentication token is missing, invalid, or expired.
+  ```json
+  {
+    "message": "Authentication required"
+  }
+  ```
