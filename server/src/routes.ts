@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { register, login } from './controllers/authController';
 import { getProducts, getProduct } from './controllers/productController';
-import { placeOrder, getOrders } from './controllers/orderController';
+import { placeOrder, getOrders, cancelOrder } from './controllers/orderController';
 import { authenticate } from './middleware/authMiddleware';
 
 const router = Router();
@@ -17,5 +17,6 @@ router.get('/products/:id', getProduct);
 // Orders (Protected - require authentication)
 router.post('/orders', authenticate, placeOrder);
 router.get('/orders', authenticate, getOrders);
+router.patch('/orders/:orderId/cancel', authenticate, cancelOrder);
 
 export default router;

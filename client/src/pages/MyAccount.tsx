@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 interface Order {
     id: string;
@@ -14,9 +15,11 @@ interface Order {
 
 const MyAccount = () => {
     const { user, token, logout, isLoading } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
 
     useEffect(() => {
@@ -46,6 +49,72 @@ const MyAccount = () => {
             console.error('Error fetching orders:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const cancelOrder = async (orderId: string) => {
+        if (!window.confirm('Are you sure you want to cancel this order?')) {
+            return;
+        }
+
+        setCancellingOrderId(orderId);
+        try {
+            const response = await fetch(`http://localhost:3000/api/orders/${orderId}/cancel`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                showToast('Order cancelled successfully', 'success');
+                // Refresh orders list
+                fetchOrders();
+            } else {
+                const data = await response.json();
+                showToast(data.message || 'Failed to cancel order', 'error');
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+            showToast('Error cancelling order', 'error');
+        } finally {
+            setCancellingOrderId(null);
+        }
+    };
+
+    const getStatusStyle = (status: string) => {
+        const statusLower = status.toLowerCase();
+        switch (statusLower) {
+            case 'new':
+                return {
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    border: '1px solid #3b82f6',
+                    color: '#3b82f6'
+                };
+            case 'shipped':
+                return {
+                    background: 'rgba(245, 158, 11, 0.1)',
+                    border: '1px solid #f59e0b',
+                    color: '#f59e0b'
+                };
+            case 'delivered':
+                return {
+                    background: 'rgba(72, 187, 120, 0.1)',
+                    border: '1px solid var(--success)',
+                    color: 'var(--success)'
+                };
+            case 'cancelled':
+                return {
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid #ef4444',
+                    color: '#ef4444'
+                };
+            default:
+                return {
+                    background: 'rgba(107, 114, 128, 0.1)',
+                    border: '1px solid #6b7280',
+                    color: '#6b7280'
+                };
         }
     };
 
@@ -375,12 +444,11 @@ const MyAccount = () => {
                                         }}>
                                             <span style={{
                                                 padding: '0.5rem 1rem',
-                                                background: 'rgba(72, 187, 120, 0.1)',
-                                                border: '1px solid var(--success)',
                                                 borderRadius: '8px',
-                                                color: 'var(--success)',
                                                 fontSize: '0.85rem',
-                                                fontWeight: '600'
+                                                fontWeight: '600',
+                                                textTransform: 'capitalize',
+                                                ...getStatusStyle(order.status || 'completed')
                                             }}>
                                                 {order.status || 'Completed'}
                                             </span>
@@ -422,27 +490,49 @@ const MyAccount = () => {
                                     <div style={{
                                         display: 'flex',
                                         justifyContent: 'space-between',
+                                        alignItems: 'center',
                                         padding: '1.25rem',
                                         background: 'rgba(102, 126, 234, 0.1)',
                                         borderRadius: '12px',
-                                        border: '1px solid var(--border-hover)'
+                                        border: '1px solid var(--border-hover)',
+                                        gap: '1rem'
                                     }}>
-                                        <span style={{
-                                            fontWeight: '700',
-                                            fontSize: '1.1rem'
-                                        }}>
-                                            Total
-                                        </span>
-                                        <span style={{
-                                            fontWeight: '800',
-                                            fontSize: '1.5rem',
-                                            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                            backgroundClip: 'text'
-                                        }}>
-                                            ${order.total}
-                                        </span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                                            <span style={{
+                                                fontWeight: '700',
+                                                fontSize: '1.1rem'
+                                            }}>
+                                                Total
+                                            </span>
+                                            <span style={{
+                                                fontWeight: '800',
+                                                fontSize: '1.5rem',
+                                                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                backgroundClip: 'text'
+                                            }}>
+                                                ${order.total}
+                                            </span>
+                                        </div>
+                                        
+                                        {order.status === 'new' && (
+                                            <button
+                                                onClick={() => cancelOrder(order.id)}
+                                                disabled={cancellingOrderId === order.id}
+                                                className="btn btn-secondary"
+                                                style={{
+                                                    padding: '0.75rem 1.5rem',
+                                                    fontSize: '0.9rem',
+                                                    color: '#ef4444',
+                                                    borderColor: '#ef4444',
+                                                    opacity: cancellingOrderId === order.id ? 0.5 : 1,
+                                                    cursor: cancellingOrderId === order.id ? 'not-allowed' : 'pointer'
+                                                }}
+                                            >
+                                                {cancellingOrderId === order.id ? 'Cancelling...' : '✕ Cancel Order'}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}

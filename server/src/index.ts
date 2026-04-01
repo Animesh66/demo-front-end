@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import cron from 'node-cron';
 import { connectDB, seedProducts } from './db';
 import routes from './routes';
+import { updateOrderStatuses } from './controllers/orderController';
 
 const app  = express();
 const PORT = 3000;
@@ -17,6 +19,15 @@ connectDB()
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
+        
+        // Schedule order status updates to run every hour
+        cron.schedule('0 * * * *', () => {
+            console.log('⏰ Running scheduled order status update...');
+            updateOrderStatuses();
+        });
+        
+        // Run status update immediately on startup
+        updateOrderStatuses();
     })
     .catch((err) => {
         console.error('Startup failed:', err);

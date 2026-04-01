@@ -21,6 +21,7 @@ This API uses JWT (JSON Web Token) authentication for protected endpoints.
 **Protected Endpoints:**
 - `POST /orders` - Place a new order (requires authentication)
 - `GET /orders` - Get user's orders (requires authentication)
+- `PATCH /orders/:orderId/cancel` - Cancel an order (requires authentication)
 
 **Public Endpoints:**
 - `POST /auth/register` - Register a new user
@@ -215,7 +216,7 @@ Submit a new user order. The user ID is automatically extracted from the authent
       "total": 299,
       "date": "2026-03-25T11:29:03.000Z",
       "paymentMethod": "VISA",
-      "status": "Completed",
+      "status": "new",
       "_id": "6732f91a2...",
       "createdAt": "2026-03-25T11:29:03.000Z",
       "updatedAt": "2026-03-25T11:29:03.000Z",
@@ -248,7 +249,7 @@ Submit a new user order. The user ID is automatically extracted from the authent
       "total": 299,
       "date": "2026-03-25T11:29:03.000Z",
       "paymentMethod": "VISA",
-      "status": "Completed",
+      "status": "new",
       "id": "6732f91a2..."
     }
   ]
@@ -262,20 +263,69 @@ Submit a new user order. The user ID is automatically extracted from the authent
   or
   ```json
   {
-    "message": "Invalid or expired token
+    "message": "Invalid or expired token"
+  }
+  ```
+
+### 3.3 Cancel an Order
+Cancel an existing order. Only orders with status "new" can be cancelled.
+
+- **Method:** `PATCH`
+- **Endpoint:** `/orders/:orderId/cancel` (Replace `:orderId` with the actual order ID)
+- **Headers:** 
+  - `Authorization: Bearer <your_jwt_token_here>`
+- **Payload:** `None`
+
+**Expected Outcomes:**
+- **200 OK**: When the order is successfully cancelled.
+  ```json
+  {
+    "message": "Order cancelled successfully",
+    "order": {
       "userId": "64bfc882f0c7743d8a9...",
       "items": [ ... ],
       "total": 299,
       "date": "2026-03-25T11:29:03.000Z",
       "paymentMethod": "VISA",
-      "status": "Completed",
+      "status": "cancelled",
       "id": "6732f91a2..."
     }
-  ]
-  ```
-- **400 Bad Request**: If the `userId` query parameter is missing from the Request URL.
-  ```json
-  {
-    "message": "User ID required"
   }
   ```
+- **400 Bad Request**: If the order status is not "new" (already shipped, delivered, or cancelled).
+  ```json
+  {
+    "message": "Cannot cancel order with status: shipped"
+  }
+  ```
+- **403 Forbidden**: If the order does not belong to the authenticated user.
+  ```json
+  {
+    "message": "Unauthorized to cancel this order"
+  }
+  ```
+- **404 Not Found**: If the order ID does not exist.
+  ```json
+  {
+    "message": "Order not found"
+  }
+  ```
+- **401 Unauthorized**: If the authentication token is missing, invalid, or expired.
+  ```json
+  {
+    "message": "Authentication required"
+  }
+  ```
+
+---
+
+## Order Status Flow
+
+Orders in the system follow an automatic status progression:
+
+1. **new** - Initial status when an order is placed. Orders can be cancelled while in this status.
+2. **shipped** - Automatically updated after 1 day (24 hours) from order creation.
+3. **delivered** - Automatically updated after 2 days (48 hours) from order creation.
+4. **cancelled** - Manual status when a user cancels an order (only possible for "new" orders).
+
+The system runs an automatic status update process every hour to transition orders through these statuses based on their creation time.

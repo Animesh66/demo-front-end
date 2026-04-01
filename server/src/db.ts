@@ -75,7 +75,7 @@ const OrderSchema = new Schema<IOrder>({
     total:         { type: Number, required: true },
     date:          { type: String, required: true },
     paymentMethod: { type: String, default: 'Not specified' },
-    status:        { type: String, default: 'Completed' },
+    status:        { type: String, default: 'new' },
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 export const OrderModel: Model<IOrder> = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
