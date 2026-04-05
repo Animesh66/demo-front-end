@@ -21,9 +21,12 @@ connectDB()
         });
         
         // Schedule order status updates to run every hour
+        // Using UTC timezone to avoid DST transition issues
         cron.schedule('0 * * * *', () => {
             console.log('⏰ Running scheduled order status update...');
             updateOrderStatuses();
+        }, {
+            timezone: "UTC"
         });
         
         // Run status update immediately on startup
