@@ -2,6 +2,7 @@ import { useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import API_ENDPOINTS from '../config/api';
 
 const Checkout = memo(() => {
     const { cart, total, clearCart } = useCart();
@@ -120,7 +121,7 @@ const Checkout = memo(() => {
         setIsProcessing(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/orders', {
+            const response = await fetch(API_ENDPOINTS.orders, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

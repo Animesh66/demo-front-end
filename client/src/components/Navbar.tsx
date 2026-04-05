@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import type { Product } from '../context/CartContext';
+import API_ENDPOINTS from '../config/api';
 
 // Cache products to avoid refetching on every search
 let productsCache: Product[] | null = null;
@@ -41,7 +42,7 @@ const Navbar = memo(() => {
             try {
                 // Fetch products only if not cached
                 if (!productsCache) {
-                    const response = await fetch('http://127.0.0.1:3000/api/products');
+                    const response = await fetch(API_ENDPOINTS.products);
                     productsCache = await response.json();
                 }
 

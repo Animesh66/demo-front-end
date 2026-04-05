@@ -2,6 +2,7 @@ import { useState, useEffect, memo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart, type Product } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import API_ENDPOINTS from '../config/api';
 
 // Helper function moved outside component
 const getOptions = (category: string) => {
@@ -49,7 +50,7 @@ const ProductDetails = memo(() => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:3000/api/products/${id}`);
+                const response = await fetch(API_ENDPOINTS.productById(id!));
                 if (!response.ok) {
                     throw new Error('Product not found');
                 }

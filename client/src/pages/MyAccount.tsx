@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import API_ENDPOINTS from '../config/api';
 
 interface Order {
     id: string;
@@ -36,7 +37,7 @@ const MyAccount = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/orders`, {
+            const response = await fetch(API_ENDPOINTS.orders, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -59,7 +60,7 @@ const MyAccount = () => {
 
         setCancellingOrderId(orderId);
         try {
-            const response = await fetch(`http://localhost:3000/api/orders/${orderId}/cancel`, {
+            const response = await fetch(API_ENDPOINTS.orderCancel(orderId), {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,

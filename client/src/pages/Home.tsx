@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PromoCarousel from '../components/PromoCarousel';
 import ProductCard from '../components/ProductCard';
 import type { Product } from '../context/CartContext';
+import API_ENDPOINTS from '../config/api';
 
 const Home = memo(() => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -11,8 +12,7 @@ const Home = memo(() => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // Use 127.0.0.1 to avoid potential localhost DNS delays
-                const response = await fetch('http://127.0.0.1:3000/api/products');
+                const response = await fetch(API_ENDPOINTS.products);
                 const data = await response.json();
                 setProducts(data);
             } catch (error) {

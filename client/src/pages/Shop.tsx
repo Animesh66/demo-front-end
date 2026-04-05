@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, memo } from 'react';
 import ProductCard from '../components/ProductCard';
 import type { Product } from '../context/CartContext';
+import API_ENDPOINTS from '../config/api';
 
 const Shop = memo(() => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -10,8 +11,7 @@ const Shop = memo(() => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // Use 127.0.0.1 to avoid potential localhost DNS delays
-                const response = await fetch('http://127.0.0.1:3000/api/products');
+                const response = await fetch(API_ENDPOINTS.products);
                 const data = await response.json();
                 // Apply sale price to selective items (e.g., every 3rd item)
                 const productsWithSales = data.map((product: Product, index: number) => {
