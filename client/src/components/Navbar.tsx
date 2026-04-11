@@ -50,7 +50,7 @@ const Navbar = memo(() => {
                 const query = searchQuery.toLowerCase();
 
                 // Score each product based on match relevance
-                const scoredProducts = productsCache.map(product => {
+                const scoredProducts = productsCache!.map(product => {
                     let score = 0;
                     const name = product.name.toLowerCase();
                     const description = product.description.toLowerCase();
