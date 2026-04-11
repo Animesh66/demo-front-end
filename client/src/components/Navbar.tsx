@@ -422,15 +422,17 @@ const Navbar = memo(() => {
                         alignItems: 'center',
                         gap: '0.5rem',
                         padding: '0.5rem 1rem',
-                        background: 'rgba(102, 126, 234, 0.1)',
+                        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25))',
                         borderRadius: '25px',
-                        border: '1px solid var(--border-color)',
+                        border: '2px solid var(--accent-primary)',
                         fontFamily: 'monospace',
-                        fontSize: '0.9rem',
-                        fontWeight: '600',
-                        color: '#fff',
+                        fontSize: '0.95rem',
+                        fontWeight: '700',
+                        color: theme === 'dark' ? '#000000' : '#ffffff',
                         minWidth: '140px',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        boxShadow: '0 2px 12px rgba(102, 126, 234, 0.3)',
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
                     }}>
                         {formatTime(currentTime)}
                     </div>
