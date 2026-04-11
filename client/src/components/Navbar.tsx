@@ -18,6 +18,7 @@ const Navbar = memo(() => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<Product[]>([]);
     const [showResults, setShowResults] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
     const searchRef = useRef<HTMLDivElement>(null);
 
     const handleLogout = () => {
@@ -96,6 +97,32 @@ const Navbar = memo(() => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // Update clock every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    // Format time as HH:MM:SS AM/PM
+    const formatTime = (date: Date): string => {
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert 0 to 12
+        
+        const hh = hours.toString().padStart(2, '0');
+        const mm = minutes.toString().padStart(2, '0');
+        const ss = seconds.toString().padStart(2, '0');
+        
+        return `${hh}:${mm}:${ss} ${ampm}`;
+    };
 
     const handleProductClick = (productId: string) => {
         setSearchQuery('');
@@ -388,6 +415,25 @@ const Navbar = memo(() => {
                             </Link>
                         </>
                     )}
+
+                    {/* Live Clock */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem 1rem',
+                        background: 'rgba(102, 126, 234, 0.1)',
+                        borderRadius: '25px',
+                        border: '1px solid var(--border-color)',
+                        fontFamily: 'monospace',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        color: '#fff',
+                        minWidth: '140px',
+                        justifyContent: 'center'
+                    }}>
+                        {formatTime(currentTime)}
+                    </div>
                 </nav>
             </div>
         </header>
